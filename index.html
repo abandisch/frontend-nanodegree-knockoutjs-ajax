@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Udacity - Project 5 - Knockout.js with Google Map API and Ajax Requests">
+    <meta name="author" content="Alex Bandisch">
+
+    <title>Udacity - Project 5 - Knockout.js with Google Map API and Ajax Requests</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link href="css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div id="site-wrapper" data-bind="css:  { 'show-nav': showMenu() }">
+
+    <div id="site-canvas">
+
+        <div id="site-menu">
+            <div class="row">
+                <div class="col-sm-12">
+                    <form role="form" id="filter-form">
+                        <input class="form-control" type="text" data-bind="value: filterQuery, valueUpdate: 'afterkeydown'" placeholder="Filter Capital Cities" autocomplete="off">
+                    </form>
+
+                    <ul class="city-listing" data-bind="foreach: visiblePlaces">
+                        <li><a class="menu-item" href="#" data-bind="text: name, click: $parent.menuItemPlaceClicked, css: { 'selected-item': selected() }"></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <section id="header" class="row">
+            <div class="col-md-12">
+                <div class="menu-toggle" data-bind="click: toggleShowMenu, css:  { 'open move-toggle-left': showMenu() }">
+                    <span class="menu-bar"></span>
+                    <span class="menu-bar"></span>
+                    <span class="menu-bar"></span>
+                </div>
+                <h1 class="pull-right">Australian Capital Cities</h1>
+            </div>
+        </section>
+
+        <section id="section-map" class="row">
+            <div class="col-md-12">
+                <div id="map" class="gmap"></div>
+            </div>
+        </section>
+
+    </div>
+</div>
+<script type="text/template" id="infowindowTemplate">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="text-center infowindow-header"><%= name %></h3>
+            </div>
+        </div>
+        <div id="infowindow-body" class="row">
+            <div class="col-sm-12 col-md-6">
+                <div class="panoramio-loader">Loading Panoramio image... <img src="images/ajax-loader.gif" alt="ajax loader"></div>
+                <div class="infowindow-panoramio hidden">
+                    <div class="panoramio-image-container">
+                        <img class="thumbnail panoramio-image" src="">
+                    </div>
+                    <hr class="hidden-xs hidden-sm">
+                    <p class="text-center panoramio-title">Image by <a href="http://www.panoramio.com/" target="_blank"><img src="images/panoramio-logo.png" alt="Panoramio Logo"></a></p>
+                </div>
+                <p class="text-center text-danger panoramio-error hidden">Sorry, I can't load the image from panoramio.com!</p>
+                <hr class="hidden-md hidden-lg">
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="wiki-loader">Loading Wikipedia info... <img src="images/ajax-loader.gif" alt="ajax loader"></div>
+                <div class="infowindow-wiki hidden">
+                    <div class="wiki-intro-container">
+                        <p class="wiki-intro"></p>
+                        <a class="wiki-link" target="_blank"></a>
+                    </div>
+                    <hr  class="hidden-xs hidden-sm">
+                    <p class="text-center wiki-title">Snippet from <a target="_blank" href="https://en.wikipedia.org/"><img src="images/wikipedia-logo.png" alt="Wikipedia Logo"></a></p>
+                </div>
+                <p class="text-center text-danger wiki-error hidden">Sorry, I can't load links from wikipedia.com!</p>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/underscore-min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/knockout-3.3.0.js"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js"></script>
+<script src="js/myapp.js"></script>
+
+<script>
+
+    google.maps.event.addDomListener(window, 'load', function(){
+
+        // List of custom locations on the map: These are the capital cities of each state of Australia
+        var myLocationList = [
+            { name: 'Adelaide, South Australia', coordinates: { lat: -34.950335, lng: 138.585695 } },
+            { name: 'Brisbane, Queensland', coordinates: { lat: -27.473427, lng: 153.015955 } },
+            { name: 'Canberra, Australian Capital Territory', coordinates: { lat: -35.311149, lng: 149.141226 } },
+            { name: 'Darwin, Northern Territory', coordinates: { lat: -12.522223, lng: 130.786914 } },
+            { name: 'Hobart, Tasmania', coordinates: { lat: -42.911797, lng: 147.294396 } },
+            { name: 'Melbourne, Victoria', coordinates: { lat: -37.804358, lng: 144.949998 } },
+            { name: 'Perth, Western Australia', coordinates: { lat: -31.957453, lng: 115.837902 } },
+            { name: 'Sydney, New South Wales', coordinates: { lat: -33.890328, lng: 151.199303 } },
+        ];
+
+        var mapOptions = {
+                    mapTypeControl: true,
+                    mapTypeControlOptions: {
+                        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                        mapTypeIds: [
+                            google.maps.MapTypeId.ROADMAP,
+                            google.maps.MapTypeId.TERRAIN,
+                            google.maps.MapTypeId.HYBRID
+                        ]
+                    }
+                },
+                map = new google.maps.Map(document.getElementById("map"), mapOptions),
+                mapBounds = new google.maps.LatLngBounds();
+
+        ko.applyBindings(new myViewModel(map, myLocationList, mapBounds));
+
+    });
+
+</script>
+
+</body>
+</html>
