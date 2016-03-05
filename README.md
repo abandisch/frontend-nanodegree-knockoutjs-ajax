@@ -46,5 +46,22 @@ Then to watch for changes, run `grunt` from the command line:
 $ grunt
 ```
 
+## How to guide
+
+This is a single page aplpication that shows the locations of the capital of each of the states in of Australia. Clicking on a marker on the map will open an info window, showing an image of the city, provided by [Panoramio](http://www.panoramio.com/) and the intro text of the corresponding [Wikipedia](https://en.wikipedia.org/wiki/Main_Page) page. This information is obtained using ajax requests via the corresponding APIs. 
+
+### Start the application
+
+* To start the application, open `dist/index.html`
+
+### Viewing location information
+
+* To view more information on a location, click on any given marker on the map. This will open a corresponding info window. If for any reason the information cannot be retrieved from the given API, an error message will be disaplyed in the info window.
+
+### Filtering location list
+
+* To filer the list of locations, type in the serach query in the input box above the list of locations. This will filter the list and the markers on the map. 
+
+* To 
 
 
