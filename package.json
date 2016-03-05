@@ -1,0 +1,19 @@
+{
+  "name": "project-5-1-knockout-ajax",
+  "version": "1.0.0",
+  "description": "Udacity - Project 5-1: KnockoutJS with Ajax requests and Google Map API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abandisch/frontend-nanodegree-knockoutjs-ajax.git"
+  },
+  "author": "Alex Bandisch <alexander.bandisch@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-cssmin": "^0.14.0",
+    "grunt-contrib-htmlmin": "^0.6.0",
+    "grunt-contrib-uglify": "^0.11.0",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}
