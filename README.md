@@ -8,7 +8,7 @@ The map I chose to display is a map of Australia and each listed location is the
 
 ## How to use the application
 
-This is a single page aplpication that shows the locations of the capital of each of the states in of Australia. Clicking on a marker on the map will open an info window, showing an image of the city, provided by [Panoramio](http://www.panoramio.com/) and the intro text of the corresponding [Wikipedia](https://en.wikipedia.org/wiki/Main_Page) page. This information is obtained using ajax requests via the corresponding APIs. The cities listed in the side bar can be filtered using the provided textbox.
+This is a single page application that shows the locations of the capital of each of the states in of Australia. Clicking on a marker on the map will open an info window, showing an image of the city, provided by [Panoramio](http://www.panoramio.com/) and the intro text of the corresponding [Wikipedia](https://en.wikipedia.org/wiki/Main_Page) page. This information is obtained using ajax requests via the corresponding APIs. The cities listed in the side bar can be filtered using the provided textbox.
 
 ### Start the application
 
