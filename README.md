@@ -28,10 +28,10 @@ To filter the list of locations in the side bar and map, type in the search quer
 
 ### Simulate an error with Ajax requests
 
-To force an error message to be displayed in the info window of the marker, block access to the one or both of the following web pages (e.g. by editing the hosts file and pointing the domain to localhost):
+To force an error message to be displayed in the info window of the marker, block access to the one or both of the following domains (e.g. by editing the hosts file and pointing the domain to localhost):
 
-* www.panoramio.com
-* en.wikipedia.org
+* [www.panoramio.com](http://www.panoramio.com)
+* [en.wikipedia.org](https://en.wikipedia.org/wiki/Main_Page)
 
 Alternatively, you can edit the source file `src/js/myKoView.js` and change the API endpoint for panoramio.com and en.wikipedia.org to an invalid URL. 
 
