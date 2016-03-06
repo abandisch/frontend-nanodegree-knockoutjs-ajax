@@ -114,18 +114,6 @@ body {
     margin-top: 10px;
 }
 
-.infowindow-panoramio {
-    display: none;
-}
-
-.show-panoramio-loader {
-    display: none;
-}
-
-.hide-panoramio-loader {
-    display: block;
-}
-
     /* Animated Hamburger Menu Icon - Original Source: http://codepen.io/designcouch/pen/Atyop */
 .menu-toggle {
     display: inline-block;

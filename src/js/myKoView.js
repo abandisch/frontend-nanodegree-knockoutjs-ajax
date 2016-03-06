@@ -17,8 +17,11 @@ function Place(data) {
     // Knockout.js observable used to indicate if this Place is marked as selected (i.e. with the 'selected-item' CSS class) in the side bar
     self.selected = ko.observable(false);
 
-    self.displayPanoramioInfowindow = ko.observable(false);
-    self.displayPanoramioLoader = ko.observable(true);
+    self.showPanoramioLoader = ko.observable(true);
+    self.panoramioImageSource = ko.observable('');
+    self.showWikipediaLoader = ko.observable(true);
+    self.wikipediaCityIntro = ko.observable('');
+    self.wikipediaCityLink = ko.observable('');
 
     // Variable used to track if the infowindow contents is being edited - see updatePanoramioImage, showPanoramioError, updateWikipediaInfo, showWikiError
     // Through a bit of research, this is my way of trying to ensure the different ajax requests don't try to update the
@@ -33,9 +36,12 @@ function Place(data) {
     // Creates a new Google map marker infowindow with the default contents obtained from the #infowindowTemplate template
     // and sets it to the Place objects's infowindow variable
     self.createInfowindow = function() {
-        self.infowindow = new google.maps.InfoWindow();
-        var infowindowTemplate = _.template($('#infowindowTemplate').html());
-        self.infowindow.setContent(infowindowTemplate({name: self.name}));
+        self.infowindow = new google.maps.InfoWindow({
+            content: document.getElementById("infowindowTemplate")
+        });
+        //var infowindowTemplate = _.template($('#infowindowTemplate').html());
+        //self.infowindow.setContent(infowindowTemplate({name: self.name}));
+        //self.infowindow.setContent($('#infowindowTemplate').html());
         self.infowindow.isOpen = false;
     };
 
@@ -52,6 +58,8 @@ function Place(data) {
             self.selected(false);
             self.marker.setIcon('images/marker_default.png');
             self.infowindow.isOpen = false;
+            self.showPanoramioLoader(true);
+            self.panoramioImageSource('');
         }
     };
 
@@ -82,7 +90,9 @@ function Place(data) {
             },
             success: function(data) {
                 var image_src = data.photos[0].photoPixelsUrls[0].url;      // The API returns an array of images, so just get the source of the first one
-                self.updatePanoramioImage(image_src);                       // Call the updatePanoramioImage function, passing the image source
+                //self.updatePanoramioImage(image_src);                       // Call the updatePanoramioImage function, passing the image source
+                self.showPanoramioLoader(false);
+                self.panoramioImageSource(image_src);
                 clearTimeout(panoramioRequestTimeout);                      // Ajax request was successful, no need to show the error, so clear the timeout (panoramioRequestTimeout)
             },
             error: function() {
@@ -103,19 +113,19 @@ function Place(data) {
             // Get the current contents of the infowindow
             var $infowindow_content = $(self.infowindow.getContent());
 
-            self.displayPanoramioLoader(false);
-
-            $infowindow_content                                         // Use jquery to:
-                //.find('.panoramio-loader')                              //  - find the preloader image
-                //.addClass('hidden')                                     //  - hide the preloader image
-                //.end()                                                  //  - go back to the beginning
+            self.showPanoramioLoader(false);
+            self.panoramioImageSource(image_src);
+            /*$infowindow_content                                         // Use jquery to:
+                .find('.panoramio-loader')                              //  - find the preloader image
+                .addClass('hidden')                                     //  - hide the preloader image
+                .end()                                                  //  - go back to the beginning
                 .find('.infowindow-panoramio')                          //  - find the panoramio section of the infowindow
                 .removeClass('hidden')                                  //  - show it
                 .find('.panoramio-image')                               //  - find the panoramio img tag
-                .attr('src', image_src);                                //  - add the image source
+                .attr('src', image_src);                                //  - add the image source*/
 
             // Set the infowindow contents with the newly created HTML
-            self.infowindow.setContent('<div class="container-fluid">' + $infowindow_content.html() + '</div>');
+            /*self.infowindow.setContent('<div class="container-fluid">' + $infowindow_content.html() + '</div>');*/
 
             // Set editingInfowindow to false, to mark that we're no longer editing it
             self.editingInfowindow = false;
@@ -177,7 +187,11 @@ function Place(data) {
                     wiki_link = data[3][0];     // Link to the wikipedia.org page for the city
 
                 // Call updateWikipediaInfo, passing through the text and link
-                self.updateWikipediaInfo(wiki_intro, wiki_link);
+                //self.updateWikipediaInfo(wiki_intro, wiki_link);
+
+                self.showWikipediaLoader(false);
+                self.wikipediaCityIntro(wiki_intro);
+                self.wikipediaCityLink(wiki_link);
 
                 // Clear the wikiRequestTimeout timeout, so the error message doesn't show
                 clearTimeout(wikiRequestTimeout);
@@ -262,6 +276,8 @@ var myViewModel = function(map, locationList, mapBounds) {
 
     // ViewModel Data
 
+    self.selectedPlace = ko.observable();
+
     // Show menu - boolean to indicate if the menu should be shown.
     self.showMenu = ko.observable(false);
 
@@ -302,11 +318,15 @@ var myViewModel = function(map, locationList, mapBounds) {
 
         // Add a 'click' event listener for the marker to open or close the infowindow
         place.marker.addListener('click', function() {
+            self.selectedPlace(place);
+            console.log(self.selectedPlace());
+            console.log(place.marker.infowindowContent);
             self.openOrCloseMarkerInfowindow(place);
         });
 
         // Add a 'clickclose' event listener for the infowindow to close the ifowindow
         place.infowindow.addListener('closeclick', function() {
+            $('body').append(place.infowindow.getContent());
             place.closeInfowindow();
         });
 
@@ -365,6 +385,7 @@ var myViewModel = function(map, locationList, mapBounds) {
     // It will call the openOrCloseMarkerInfowindow function and pass it the clicked Place object, which
     // will then open or close the infowindow/change the icon of the given Place object
     self.menuItemPlaceClicked = function(clicked_place) {
+        self.selectedPlace(clicked_place);
         self.openOrCloseMarkerInfowindow(clicked_place);
     };
 
