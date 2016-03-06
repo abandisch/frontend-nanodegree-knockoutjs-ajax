@@ -4,12 +4,11 @@ module.exports = function(grunt) {
         uglify: {
             main: {
                 files: {
-                    'dist/js/app.min.js' : ['src/js/jquery.min.js',
-                                            'src/js/underscore-min.js',
-                                            'src/js/bootstrap.min.js',
-                                            'src/js/knockout-3.3.0.js',
-                                            'src/js/myKoView.js',
-                                            'src/js/myapp.js']
+                    'dist/js/scripts.min.js' : ['src/js/jquery.min.js',
+                                                'src/js/bootstrap.min.js',
+                                                'src/js/knockout-3.3.0.js',
+                                                'src/js/myKoViewModel.js',
+                                                'src/js/myKoApp.js']
                 }
             }
         }, // uglify

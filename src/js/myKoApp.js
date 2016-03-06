@@ -1,4 +1,9 @@
-google.maps.event.addDomListener(window, 'load', function(){
+
+// Function to handle the situation when the Google Map API load succeeds
+function googleMapSuccess() {
+
+    // Adds isOpen variable to the Google Map InfoWindow - this is used to track the state of the infowindow, i.e. if it's open (true) or not (false)
+    google.maps.InfoWindow.prototype.isOpen = false;
 
     // List of custom locations on the map: These are the capital cities of each state of Australia
     var myLocationList = [
@@ -28,4 +33,11 @@ google.maps.event.addDomListener(window, 'load', function(){
 
     ko.applyBindings(new myViewModel(map, myLocationList, mapBounds));
 
-});
+}
+
+// Function to handle the situation when the Google Map API load fails
+function googleMapError() {
+    if(confirm('Sorry, but I cannot load the Google Map API. Please confirm you have access to http://maps.googleapis.com, and then press OK to try again.')){
+        window.location.reload();
+    }
+}
