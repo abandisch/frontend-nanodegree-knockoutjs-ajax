@@ -12,11 +12,11 @@ This is a single page application that shows the locations of the capital city o
 
 ### Start the application
 
-* To start the application, open `dist/index.html` in your browser.
+To start the application, open `dist/index.html` in your browser.
 
 ### Viewing location information
 
-* To view more information for a given location, either: 
+To view more information for a given location, either: 
   * Click on any given marker on the map, _or_
   * Click on a city name in the side bar
 
@@ -24,7 +24,19 @@ Doing one of the above will open the corresponding info window and display an im
 
 ### Filtering location list
 
-* To filter the list of locations in the side bar and map, type in the search query in the input box above the list of locations in the side bar. 
+To filter the list of locations in the side bar and map, type in the search query in the input box above the list of locations in the side bar. 
+
+### Simulate an error with Ajax requests
+
+To force an error message to be displayed in the info window of the marker, block access to the one or both of the following web pages (e.g. by editing the hosts file and pointing the domain to localhost):
+
+* www.panoramio.com
+* en.wikipedia.org
+
+Alternatively, you can edit the source file `src/js/myKoView.js` and change the API endpoint for panoramio.com and en.wikipedia.org to an invalid URL. 
+
+* For panoramio.com change: `var panoramioAPI = 'http://www.panoramio.com/wapi/data/get_photos?v=1';`, located under the `self.panoramioAjaxRequest` function.
+* For wikipedia.org change: `var wikipediaAPI = 'https://en.wikipedia.org/w/api.php?action=opensearch&format=json&limit=1&namespace=0&utf8=1&search=' + city_name;`, located under the `self.wikiAjaxRequest` function.
 
 ## Production and Development files
 
@@ -68,6 +80,3 @@ Then to watch for development changes under the `src` directory and automaticall
 ```sh
 $ grunt
 ```
-
-
-
