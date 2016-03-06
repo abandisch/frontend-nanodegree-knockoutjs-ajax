@@ -17,16 +17,18 @@ function Place(data) {
     // Knockout.js observable used to indicate if this Place is marked as selected (i.e. with the 'selected-item' CSS class) in the side bar
     self.selected = ko.observable(false);
 
-    self.showPanoramioLoader = ko.observable(true);
-    self.panoramioImageSource = ko.observable('');
-    self.showWikipediaLoader = ko.observable(true);
-    self.wikipediaCityIntro = ko.observable('');
-    self.wikipediaCityLink = ko.observable('');
+    // Knockout JS bindings for the Panoramio elements on the infowindow
+    self.showPanoramioLoader = ko.observable(true);     // Determines if Panoramio preloader is shown or not
+    self.showPanoramioInfo = ko.observable(false);      // Determines if Panoramio info section is shown or not
+    self.showPanoramioError = ko.observable(false);     // Determines if Panoramio error is shown or not
+    self.panoramioImageSource = ko.observable('');      // Panoramio image - contains the image obtained from the ajax request
 
-    // Variable used to track if the infowindow contents is being edited - see updatePanoramioImage, showPanoramioError, updateWikipediaInfo, showWikiError
-    // Through a bit of research, this is my way of trying to ensure the different ajax requests don't try to update the
-    // infowindow html contents at the same time. It's probably overkill, but I added it just in case.
-    self.editingInfowindow = false;
+    // Knockout JS bindings for the Wikipedia elements on the infowindow
+    self.showWikipediaLoader = ko.observable(true);     // Determines if Wikipedia preloader is shown or not
+    self.showWikipediaInfo = ko.observable(false);      // Determines if Wikipedia info section is shown or not
+    self.wikipediaCityIntro = ko.observable('');        // Wikipedia intro text obtained from ajax request
+    self.wikipediaCityLink = ko.observable('');         // Wikipedia hyperlink obtained from ajax request
+    self.showWikipediaError = ko.observable(false);     // Determines if Wikipedia preloader is shown or not
 
     // Creates a new Google map marker and sets it to the Place objects's marker variable
     self.createMarker = function(markerOptions) {
@@ -39,9 +41,6 @@ function Place(data) {
         self.infowindow = new google.maps.InfoWindow({
             content: document.getElementById("infowindowTemplate")
         });
-        //var infowindowTemplate = _.template($('#infowindowTemplate').html());
-        //self.infowindow.setContent(infowindowTemplate({name: self.name}));
-        //self.infowindow.setContent($('#infowindowTemplate').html());
         self.infowindow.isOpen = false;
     };
 
@@ -53,6 +52,7 @@ function Place(data) {
     // - Set the custom infowindow's isOpen variable to false
     self.closeInfowindow = function() {
         if (self.infowindow.isOpen) {
+            $('body').append(self.infowindow.getContent());
             self.marker.setAnimation(null);
             self.infowindow.close();
             self.selected(false);
@@ -74,7 +74,7 @@ function Place(data) {
         // Sets a timeout for 8 seconds, which will show the panoramio.com error message in the infowindow,
         // in case we can't retrieve the image through the ajax request after that period of time
         var panoramioRequestTimeout = setTimeout(function() {
-            self.showPanoramioError();
+            self.showPanoramioError(true);
         }, 8000);
 
         // panoramio.com API endpoint
@@ -90,78 +90,19 @@ function Place(data) {
             },
             success: function(data) {
                 var image_src = data.photos[0].photoPixelsUrls[0].url;      // The API returns an array of images, so just get the source of the first one
-                //self.updatePanoramioImage(image_src);                       // Call the updatePanoramioImage function, passing the image source
-                self.showPanoramioLoader(false);
-                self.panoramioImageSource(image_src);
-                clearTimeout(panoramioRequestTimeout);                      // Ajax request was successful, no need to show the error, so clear the timeout (panoramioRequestTimeout)
+
+                self.showPanoramioInfo(true);           // Set the showPanoramioInfo knockout JS observable to true so the Panoramio Info section is displayed
+                self.panoramioImageSource(image_src);   // Set the panoramioImageSource knockout JS observable to the value obtained from the API request
+
+                clearTimeout(panoramioRequestTimeout);  // Ajax request was successful, no need to show the error, so clear the timeout (panoramioRequestTimeout)
             },
             error: function() {
-                self.showPanoramioError();                                  // In case there was an error caught by the ajax request, call showPanoramioError to show the error in the infowindow
+                self.showPanoramioError(true);          // In case there was an error caught by the ajax request, call showPanoramioError to show the error in the infowindow
+            },
+            complete: function() {
+                self.showPanoramioLoader(false);        // set showPanoramioLoader to false to remove the preloader GIF
             }
         });
-    };
-
-    // Updates the Panoramio image section of the infowindow with the image source obtained from the ajax request
-    self.updatePanoramioImage = function(image_src) {
-
-        // Check if we're not currently editing this infowindow
-        if (!self.editingInfowindow) {
-
-            // Set editingInfowindow to true, to mark that we're currently editing it
-            self.editingInfowindow = true;
-
-            // Get the current contents of the infowindow
-            var $infowindow_content = $(self.infowindow.getContent());
-
-            self.showPanoramioLoader(false);
-            self.panoramioImageSource(image_src);
-            /*$infowindow_content                                         // Use jquery to:
-                .find('.panoramio-loader')                              //  - find the preloader image
-                .addClass('hidden')                                     //  - hide the preloader image
-                .end()                                                  //  - go back to the beginning
-                .find('.infowindow-panoramio')                          //  - find the panoramio section of the infowindow
-                .removeClass('hidden')                                  //  - show it
-                .find('.panoramio-image')                               //  - find the panoramio img tag
-                .attr('src', image_src);                                //  - add the image source*/
-
-            // Set the infowindow contents with the newly created HTML
-            /*self.infowindow.setContent('<div class="container-fluid">' + $infowindow_content.html() + '</div>');*/
-
-            // Set editingInfowindow to false, to mark that we're no longer editing it
-            self.editingInfowindow = false;
-        } else {
-            // If the infowindow is being edited, wait 100ms and then try again
-            setTimeout(self.updatePanoramioImage(image_src), 100);
-        }
-    };
-
-    // Shows the error message in the Panoramio section of the infowindow
-    self.showPanoramioError = function() {
-        // Check if we're not currently editing this infowindow
-        if (!self.editingInfowindow) {
-
-            // Set editingInfowindow to true, to mark that we're currently editing it
-            self.editingInfowindow = true;
-
-            // Get the current contents of the infowindow
-            var $infowindow_content = $(self.infowindow.getContent());
-
-            $infowindow_content                 // Use jquery to:
-                .find('.panoramio-loader')      //  - Find the preloader image
-                .addClass('hidden')             //  - hide it
-                .end()                          //  - go back to the beginning
-                .find('.panoramio-error')       //  - find the Panoramio error message
-                .removeClass('hidden');         //  - show it
-
-            // Set the infowindow contents with the newly created HTML
-            self.infowindow.setContent('<div class="container-fluid">' + $infowindow_content.html() + '</div>');
-
-            // Set editingInfowindow to false, to mark that we're no longer editing it
-            self.editingInfowindow = false;
-        } else {
-            // If the infowindow is being edited, wait 100ms and then try again
-            setTimeout(self.showPanoramioError(), 100);
-        }
     };
 
     // wikipedia.org ajax request
@@ -173,7 +114,7 @@ function Place(data) {
         // Sets a timeout for 8 seconds, which will show the wikipedia.org error message in the infowindow,
         // in case we can't retrieve the info through the ajax request after that period of time
         var wikiRequestTimeout = setTimeout(function() {
-            self.showWikiError();
+            self.showWikipediaError(true);
         }, 8000);
 
         // wikipedia.org API endpoint
@@ -186,87 +127,20 @@ function Place(data) {
                 var wiki_intro = data[2][0],    // Text about the city
                     wiki_link = data[3][0];     // Link to the wikipedia.org page for the city
 
-                // Call updateWikipediaInfo, passing through the text and link
-                //self.updateWikipediaInfo(wiki_intro, wiki_link);
-
-                self.showWikipediaLoader(false);
-                self.wikipediaCityIntro(wiki_intro);
-                self.wikipediaCityLink(wiki_link);
+                self.showWikipediaInfo(true);           // Set showWikipediaInfo to show the Wikipedia info section
+                self.wikipediaCityIntro(wiki_intro);    // Set wikipediaCityIntro to the value obtained by the API request
+                self.wikipediaCityLink(wiki_link);      // Set wikipediaCityLink to the value obtained by the API request
 
                 // Clear the wikiRequestTimeout timeout, so the error message doesn't show
                 clearTimeout(wikiRequestTimeout);
             },
             error: function() {
-                self.showWikiError();           // In case there was an error caught by the ajax request, call showWikiError to show the error in the infowindow
+                self.showWikipediaError(true);          // In case there was an error caught by the ajax request, call showWikiError to show the error in the infowindow
+            },
+            complete: function() {
+                self.showWikipediaLoader(false);        // set showPanoramioLoader to false to remove the preloader GIF
             }
         });
-    };
-
-    // Updates the Wikipedia info section of the infowindow with the wikipedia text and link obtained from the ajax request
-    self.updateWikipediaInfo = function(wiki_intro, wiki_link) {
-
-        // Check if we're not currently editing this infowindow
-        if (!self.editingInfowindow) {
-
-            // Set editingInfowindow to true, to mark that we're currently editing it
-            self.editingInfowindow = true;
-
-            // Get the current contents of the infowindow
-            var $infowindow_content = $(self.infowindow.getContent());
-
-            $infowindow_content             // Use jquery to:
-                .find('.wiki-loader')       //  - Find the preloader
-                .addClass('hidden')         //  - hide it
-                .end()                      //  - go back to the beginning
-                .find('.infowindow-wiki')   //  - find the wikipedia section of the infowindow
-                .removeClass('hidden')      //  - show it
-                .find('.wiki-intro')        //  - find the wikipedia intro text element
-                .html(wiki_intro)           //  - update the text of that element
-                .end()                      //  - go back to the beginning
-                .find('.wiki-link')         //  - find the wikipedia link element
-                .attr('href', wiki_link)    //  - update the href attribute
-                .text('Find out more on Wikipedia...'); //  - update the text for the link
-
-            // Set the infowindow contents with the newly created HTML
-            self.infowindow.setContent('<div class="container-fluid">' + $infowindow_content.html() + '</div>');
-
-            // Set editingInfowindow to false, to mark that we're no longer editing it
-            self.editingInfowindow = false;
-        } else {
-            // If the infowindow is being edited, wait 100ms and then try again
-            setTimeout(self.updateWikipediaInfo(wiki_intro, wiki_link), 100);
-        }
-    };
-
-    // Shows the error message in the Wikipedia section of the infowindow
-    self.showWikiError = function() {
-
-        // Check if we're not currently editing this infowindow
-        if (!self.editingInfowindow) {
-
-            // Set editingInfowindow to true, to mark that we're currently editing it
-            self.editingInfowindow = true;
-
-            // Get the current contents of the infowindow
-            var $infowindow_content = $(self.infowindow.getContent());
-
-
-            $infowindow_content         // Use jquery to:
-                .find('.wiki-loader')   // - Find the preloader
-                .addClass('hidden')     // - hide it
-                .end()                  // - go back to the beginning
-                .find('.wiki-error')    // - find the wikipedia error message
-                .removeClass('hidden'); // - show it
-
-            // Set the infowindow contents with the newly created HTML
-            self.infowindow.setContent('<div class="container-fluid">' + $infowindow_content.html() + '</div>');
-
-            // Set editingInfowindow to false, to mark that we're no longer editing it
-            self.editingInfowindow = false;
-        } else {
-            // If the infowindow is being edited, wait 100ms and then try again
-            setTimeout(self.showWikiError(), 100);
-        }
     };
 
 }
@@ -276,6 +150,7 @@ var myViewModel = function(map, locationList, mapBounds) {
 
     // ViewModel Data
 
+    // Knockout JS observable for the selected Place - used to populate the infowindow information
     self.selectedPlace = ko.observable();
 
     // Show menu - boolean to indicate if the menu should be shown.
@@ -319,14 +194,11 @@ var myViewModel = function(map, locationList, mapBounds) {
         // Add a 'click' event listener for the marker to open or close the infowindow
         place.marker.addListener('click', function() {
             self.selectedPlace(place);
-            console.log(self.selectedPlace());
-            console.log(place.marker.infowindowContent);
             self.openOrCloseMarkerInfowindow(place);
         });
 
         // Add a 'clickclose' event listener for the infowindow to close the ifowindow
         place.infowindow.addListener('closeclick', function() {
-            $('body').append(place.infowindow.getContent());
             place.closeInfowindow();
         });
 
@@ -349,6 +221,11 @@ var myViewModel = function(map, locationList, mapBounds) {
     self.filterQuery = ko.observable('');
 
     // ViewModel Behaviour
+
+    // Make the map fit on the screen when the user resizes the window
+    window.onresize = function() {
+        self.googleMap.fitBounds(mapBounds);
+    };
 
     // Toggle the showMenu observable when the user clicks the menu icon
     self.toggleShowMenu = function() {
