@@ -8,7 +8,7 @@ The map I chose to display is a map of Australia and each listed location is the
 
 ## How to use the application
 
-This is a single page application that shows the locations of the capital of each of the states in of Australia. Clicking on a marker on the map will open an info window, showing an image of the city, provided by [Panoramio](http://www.panoramio.com/) and the intro text of the corresponding [Wikipedia](https://en.wikipedia.org/wiki/Main_Page) page. This information is obtained using ajax requests via the corresponding APIs. The cities listed in the side bar can be filtered using the provided textbox.
+This is a single page application that shows the locations of the capital city of each of the states in Australia. Clicking on a marker on the map will open an info window, showing an image of the city, provided by [Panoramio](http://www.panoramio.com/) and the intro text of the corresponding [Wikipedia](https://en.wikipedia.org/wiki/Main_Page) page. This information is obtained using ajax requests via the corresponding APIs. The cities listed in the side bar can be filtered using the provided textbox.
 
 ### Start the application
 
@@ -20,15 +20,15 @@ This is a single page application that shows the locations of the capital of eac
   * Click on any given marker on the map, _or_
   * Click on a city name in the side bar
 
-Doing one of the above will open a corresponding info window and display an image and corresponding Wikipedia information. If for any reason the information cannot be retrieved from the given API, an error message will be disaplyed in the info window.
+Doing one of the above will open the corresponding info window and display an image and related Wikipedia information for the selcted city. If for any reason the information cannot be retrieved from the given API, an error message will be disaplyed in the info window.
 
 ### Filtering location list
 
-* To filter the list of locations, type in the serach query in the input box above the list of locations in the side bar. This will filter the list of cities in the side bar and the correspoding markers on the map. 
+* To filter the list of locations in the side bar and map, type in the search query in the input box above the list of locations in the side bar. 
 
 ## Production and Development files
 
-The following outlines the included files for the Development, i.e. files located under the `src` directory
+The below are the files used for Development, i.e. files located under the `src` directory
 * `src/`
   * `css/`
     * `bootstrap.min.css` - minified Bootstrap CSS
@@ -41,11 +41,16 @@ The following outlines the included files for the Development, i.e. files locate
     * `myKoView.js` - Knockout ViewModel and Place object
     * `myapp.js` - Knockout bindings
 
-The following outlines the included files for Production, i.e. files located under the `dist` directory
+The following are the files for Production, i.e. files located under the `dist` directory
 * `dist/`
   * `css/`
     * `styles.min.css` - minified Bootstrap and custom CSS in one file
-  * `images/` - image files
+  * `images/` 
+    * `ajax-loader.gif` - Ajax preloader animation GIF
+    * `marker_default.png` - Default marker icon
+    * `marker_active.png` - Active marker icon (indicates selected marker)
+    * `panoramio-logo.png` - Logo for panoramio.com
+    * `wikipedia-logo.png` - Logo for wikipedia.org
   * `js/`
     * `app.min.js` - jQuery, Bootstrap JS, knockout JS, underscore JS and custom app JS
 
@@ -55,11 +60,11 @@ Other files
 
 ## Setting up the development environment
 
-The application works out of the box by opening `dist/index.html` in the browser, however to make changes to the source code, located under the `src` directory you'll need [Grunt](http://gruntjs.com/getting-started) installed globally. Once Grunt is installed, navigate to the root directory (where package.json is located), and then run the following on the command line:
+The application works out of the box by opening `dist/index.html` in the browser, however to make changes to the source code, located under the `src` directory you'll need [Grunt](http://gruntjs.com/getting-started) installed globally. Once Grunt is installed, navigate to the root directory (where package.json is located), and then run the following on the command line to install the required Grunt plugins:
 ```sh
 $ npm install
 ```
-Then to watch for changes under the `src` directory and automatically complie and output the changes to the `dist` directory, run `grunt` from the command line:
+Then to watch for development changes under the `src` directory and automatically complie and output the changes to the `dist` directory, run `grunt` from the command line:
 ```sh
 $ grunt
 ```
