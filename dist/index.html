@@ -6,7 +6,7 @@
         </div>
         <div id="infowindow-body" class="row">
             <div class="col-sm-12 col-md-6">
-                <div class="panoramio-loader">Loading Panoramio image... <img src="images/ajax-loader.gif" alt="ajax loader"></div>
+                <div class="panoramio-loader" data-bind="css: { 'show-panoramio-loader': displayPanoramioLoader() }">Loading Panoramio image... <img src="images/ajax-loader.gif" alt="ajax loader"></div>
                 <div class="infowindow-panoramio hidden">
                     <div class="panoramio-image-container">
                         <img class="thumbnail panoramio-image" src="">
@@ -30,4 +30,4 @@
                 <p class="text-center text-danger wiki-error hidden">Sorry, I can't load links from wikipedia.com!</p>
             </div>
         </div>
-    </div></script><script type="text/javascript" src="http://maps.googleapis.com/maps/api/js"></script><script src="js/app.min.js"></script></body></html>
+    </div></script><script>function googleSuccess() {}</script><script async src="http://maps.googleapis.com/maps/api/js?callback=googleSuccess"></script><script src="js/app.min.js"></script></body></html>

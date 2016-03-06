@@ -1,6 +1,3 @@
-// Adds isOpen variable to the Google Map InfoWindow - this is used to track the state of the infowindow, i.e. if it's open (true) or not (false)
-google.maps.InfoWindow.prototype.isOpen = false;
-
 // Place object - stores and tracks all details of the Place and its corresponding marker and infowindow
 function Place(data) {
     var self = this;
@@ -19,6 +16,9 @@ function Place(data) {
 
     // Knockout.js observable used to indicate if this Place is marked as selected (i.e. with the 'selected-item' CSS class) in the side bar
     self.selected = ko.observable(false);
+
+    self.displayPanoramioInfowindow = ko.observable(false);
+    self.displayPanoramioLoader = ko.observable(true);
 
     // Variable used to track if the infowindow contents is being edited - see updatePanoramioImage, showPanoramioError, updateWikipediaInfo, showWikiError
     // Through a bit of research, this is my way of trying to ensure the different ajax requests don't try to update the
@@ -103,10 +103,12 @@ function Place(data) {
             // Get the current contents of the infowindow
             var $infowindow_content = $(self.infowindow.getContent());
 
+            self.displayPanoramioLoader(false);
+
             $infowindow_content                                         // Use jquery to:
-                .find('.panoramio-loader')                              //  - find the preloader image
-                .addClass('hidden')                                     //  - hide the preloader image
-                .end()                                                  //  - go back to the beginning
+                //.find('.panoramio-loader')                              //  - find the preloader image
+                //.addClass('hidden')                                     //  - hide the preloader image
+                //.end()                                                  //  - go back to the beginning
                 .find('.infowindow-panoramio')                          //  - find the panoramio section of the infowindow
                 .removeClass('hidden')                                  //  - show it
                 .find('.panoramio-image')                               //  - find the panoramio img tag
