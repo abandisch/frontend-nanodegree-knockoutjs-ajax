@@ -48,10 +48,9 @@ The below are the files used for Development, i.e. files located under the `src`
   * `js/`
     * `jquery.min.js` - jQuery
     * `bootstrap.min.js` - Bootstrap JS
-    * `underscore-min.js` - Underscore JS
     * `knockout-3.3.0.js` - Knockout JS
-    * `myKoView.js` - Knockout ViewModel and Place object
-    * `myapp.js` - Knockout bindings
+    * `myKoViewModel.js` - Knockout ViewModel and Place object
+    * `myKoApp.js` - Knockout bindings, including Google Map API success and error callback functions
 
 The following are the files for Production, i.e. files located under the `dist` directory
 * `dist/`
